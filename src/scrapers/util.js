@@ -3,4 +3,28 @@ const idGenerator = function (id) {
     if (!id) throw new Error("Invalid ID")
     return id.padStart(15, "0");
 }
-module.exports = { idGenerator };
+const AgentArray = [
+    "astra",
+    "breach",
+    "brimstone",
+    "chamber",
+    "cypher",
+    "fade",
+    "gekko",
+    "harbor",
+    "jett",
+    "kayo",
+    "killjoy",
+    "neon",
+    "omen",
+    "phoenix",
+    "raze",
+    "reyna",
+    "sage",
+    "skye",
+    "sova",
+    "viper",
+    "yoru"
+];
+
+module.exports = { idGenerator, AgentArray };
