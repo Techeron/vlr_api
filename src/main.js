@@ -8,6 +8,7 @@ const cors = require('cors');
 const { fetchAllEvents } = require('./scrapers/event/all');
 const { fetchOneEvent } = require('./scrapers/event/one');
 const { fetchOnePlayer } = require('./scrapers/player/one');
+const { fetchOneTeam } = require('./scrapers/team/one');
 
 // Config Settings
 const PORT = process.env.PORT || 3000;
@@ -255,7 +256,12 @@ app.get("/api/rankings/:region", async (req, res) => {
 
 // Teams
 app.get("/api/team/:id", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    fetchOneTeam(req.params.id).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        console.error(err);
+        res.json({ status: "Failed", error: err });
+    });
 });
 app.get("/api/teams", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
