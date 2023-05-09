@@ -46,6 +46,7 @@ const fetchAllEvents = async (pages = 1) => {
             if (eventStatus == "Completed") return;
             Events.push({
                 type: "event",
+                name: eventTitle,
                 title: eventTitle,
                 date: eventDate,
                 status: eventStatus,

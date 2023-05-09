@@ -10,6 +10,14 @@ const { fetchOneEvent } = require('./scrapers/event/one');
 
 // Config Settings
 const PORT = process.env.PORT || 3000;
+const MaxPages = { // Updated 1x per day
+    "event": 10,
+    "match": 10,
+    "news": 10,
+    "player": 10,
+    "team": 10,
+    "lastUpdated": Date.now()
+}; 
 
 // Error handling fix
 if (!('toJSON' in Error.prototype))
@@ -163,7 +171,8 @@ app.get("/api", (req, res) => {
         },
         version: "1.0.0",
         author: "Cody Krist",
-        lastUpdated: "5/9/2023"
+        lastUpdated: "5/9/2023",
+        MaxPages: MaxPages
     });
 });
 
@@ -175,6 +184,10 @@ app.get("/api/event/:id", async (req, res) => {
         console.error(err);
         res.json({ status: "Failed", error: err });
     });
+});
+/** - Needs Work */
+app.get("/api/event/:id/matches", async (req, res) => {
+    res.json({ status: "Success", data: "WIP" });
 });
 app.get("/api/events/:page?", async (req, res) => {
     // Validate input

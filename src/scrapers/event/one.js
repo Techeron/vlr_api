@@ -28,7 +28,7 @@ const fetchOneEvent = async (id) => {
                         const teamLink = $(element).find(".event-team-name").attr("href");
                         const teamId = teamLink.split("/")[2];
                         const teamPlayers = new Array();
-                        Teams.push({ name: teamName, logo: `https:${teamLogo}`, link: `https://www.vlr.gg${teamLink}`, id: idGenerator(teamId), players: teamPlayers });
+                        Teams.push({ type:"team", name: teamName, logo: `https:${teamLogo}`, link: `https://www.vlr.gg${teamLink}`, id: idGenerator(teamId), players: teamPlayers });
                     });
                 } catch (err) {
                     throw err;
@@ -52,14 +52,17 @@ const fetchOneEvent = async (id) => {
                     const playerTeamId = idGenerator($(element).parent().parent().find(".event-team-name").attr("href").split("/")[2]);
                     for (let i = 0; i < Teams.length; i++) {
                         if (Teams[i].name == playerTeamName) {
-                            Teams[i].players.push({ ign: playerIgn, link: `https://www.vlr.gg${playerLink}`, id: playerId });
+                            Teams[i].players.push({ type: "player", ign: playerIgn, link: `https://www.vlr.gg${playerLink}`, id: playerId });
                         }
                     };
                     Players.push({
+                        type: "player",
+                        name: playerIgn,
                         ign: playerIgn,
                         link: `https://www.vlr.gg${playerLink}`,
                         id: playerId,
                         team: {
+                            type: "team",
                             name: playerTeamName,
                             id: playerTeamId
                         }
