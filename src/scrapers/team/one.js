@@ -82,7 +82,12 @@ const fetchOneTeam = async (id) => {
                 resolve(Team);
             })
             .catch((err) => {
-                reject(err);
+                // if 404 then return a custom error
+                if (err.response.status == 404) {
+                    reject(new Error("Team Not Found"));
+                } else {
+                    reject(err);
+                }
             });
     });
 }

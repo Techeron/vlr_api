@@ -6,7 +6,8 @@
   "scripts": {
     "debug": "nodemon src/main.js",
     "deploy": "git add . && git commit -m \"deploy\" && git push heroku master",
-    "start": "node main.js"
+    "start": "node main.js",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "mocha": "^10.2.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {

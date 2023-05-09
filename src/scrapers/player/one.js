@@ -9,7 +9,7 @@ const { idGenerator, AgentArray } = require('../util');
 const fetchOnePlayer = async (id) => {
     // Validate input
     // make sure id is a string of numbers
-    if (!id.match(/^[0-9]+$/)) throw new Error("Invalid ID");
+    if (!id.match(/^[0-9]+$/)) throw new Error(`Invalid ID: ${id}`);
     return new Promise(async (resolve, reject) => {
         // fetch the page
         axios.get(`https://www.vlr.gg/player/${id}`)
@@ -24,7 +24,8 @@ const fetchOnePlayer = async (id) => {
                 Player.link = `https://www.vlr.gg/player/${id}`;
                 Player.photo = cleanPhoto($('.player-header img').attr('src'));
                 Player.country = cleanCountry($('.player-header .ge-text-light').text().trim());
-                Player.team = idGenerator($('div.player-summary-container-1 > div:nth-child(6) > a').attr("href")?.split("/")[2]);
+                Player.team = $('div.player-summary-container-1 > div:nth-child(6) > a').attr("href")?.split("/")[2] ?? null;
+                if(Player.team !== null) Player.team = idGenerator(Player.team);
                 Player.role = $('.profile-role').text().trim();
                 Player.earnings = $('.player-summary-container-2 .wf-card:nth-child(4) span').text().trim()?.split("\n")[0];
                 Player.stats = new Object();
