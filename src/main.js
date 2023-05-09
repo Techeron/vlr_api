@@ -6,9 +6,30 @@ const cors = require('cors');
 
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
+const { fetchOneEvent } = require('./scrapers/event/one');
 
 // Config Settings
 const PORT = process.env.PORT || 3000;
+
+// Error handling fix
+if (!('toJSON' in Error.prototype))
+Object.defineProperty(Error.prototype, 'toJSON', {
+    value: function () {
+        var alt = {};
+
+        Object.getOwnPropertyNames(this).forEach(function (key) {
+            alt[key] = this[key];
+        }, this);
+
+        // Split the stacy by /n to make it more readable
+        const traceArray = alt.stack.split("\n");
+        alt.stack = {"cause": traceArray[0], "trace": traceArray.slice(1)};
+
+        return alt;
+    },
+    configurable: true,
+    writable: true
+});
 
 // Setup Express
 const app = express();
@@ -148,10 +169,22 @@ app.get("/api", (req, res) => {
 
 // Events
 app.get("/api/event/:id", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    fetchOneEvent(req.params.id).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        console.error(err);
+        res.json({ status: "Failed", error: err });
+    });
 });
-app.get("/api/events", async (req, res) => {
-    fetchAllEvents(1).then((data) => {
+app.get("/api/events/:page?", async (req, res) => {
+    // Validate input
+    // if Page is not a number, default to 1
+    if (isNaN(req.params.page)) req.params.page = 1;
+    // if Page is less than 1, default to 1
+    if (req.params.page < 1) req.params.page = 1;
+    // if Page is greater than 10, default to 10
+    if (req.params.page > 10) req.params.page = 10;    
+    fetchAllEvents(req.params.page).then((data) => {
         res.json({ status: "Success", data: data });
     }).catch((err) => {
         res.json({ status: "Failed", error: err });
