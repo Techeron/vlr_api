@@ -267,6 +267,20 @@ app.get("/api/teams", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
 
+// 404 setup
+app.get('*', function(req, res){
+    res.json({
+        status: "Failed",
+        error: {
+            stack: {
+                cause: "Invalid Endpoint",
+                trace: [],
+            },
+            message: "Invalid Endpoint"
+        }
+    });
+});
+
 // Setup Cors
 app.use(cors({
     origin: '*'
