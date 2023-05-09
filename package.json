@@ -1,0 +1,21 @@
+{
+  "name": "vlr_api",
+  "version": "1.0.0",
+  "description": "An unofficial API for vlr.gg",
+  "main": "main.js",
+  "scripts": {
+    "debug": "nodemon src/main.js",
+    "deploy": "git add . && git commit -m \"deploy\" && git push heroku master",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Techeron/vlr_api.git"
+  },
+  "author": "Cody Krist",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Techeron/vlr_api/issues"
+  },
+  "homepage": "https://github.com/Techeron/vlr_api#readme"
+}
