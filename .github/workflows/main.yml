@@ -17,7 +17,7 @@ jobs:
       with:
         host: ${{ secrets.VLR_API_HOST }}
         username: ${{ secrets.VLR_API_USERNAME }}
-        password: ${{ secrets.VLR_API_PASSWORD }}
+        key: ${{ secrets.VLR_API_KEY }}
         source: "."
         target: "~/vlr.techeron.com"
 
@@ -26,5 +26,5 @@ jobs:
       with:
         host: ${{ secrets.VLR_API_HOST }}
         username: ${{ secrets.VLR_API_USERNAME }}
-        password: ${{ secrets.VLR_API_PASSWORD }}
+        key: ${{ secrets.VLR_API_KEY }}
         script: "cd ~/vlr.techeron.com && ./deploy-script.sh"
