@@ -7,6 +7,7 @@ const cors = require('cors');
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
 const { fetchOneEvent } = require('./scrapers/event/one');
+const { fetchOnePlayer } = require('./scrapers/player/one');
 
 // Config Settings
 const PORT = process.env.PORT || 3000;
@@ -236,7 +237,12 @@ app.get("/api/news", async (req, res) => {
 
 // Players
 app.get("/api/player/:id", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    fetchOnePlayer(req.params.id).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        console.error(err);
+        res.json({ status: "Failed", error: err });
+    });
 });
 app.get("/api/players", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });

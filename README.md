@@ -59,7 +59,7 @@ All endpoints are relative to the domain root
       }
   }
   ```
-### `/events`
+### `/events/:pages`
 - Method: `GET`
 - Response:
   ```json
@@ -91,7 +91,85 @@ All endpoints are relative to the domain root
       }
   }
   ```
+### `/match/:id`
+### `/matches`
+### `/news`
+### `/player/:id`
 
+  ```json
+{
+    "status": "Success",
+    "data": {
+        "ign": "Asuna",
+        "name": "Asuna",
+        "realName": "Peter Mazuryk",
+        "id": "000000000000601",
+        "link": "https://www.vlr.gg/player/601",
+        "photo": "https://owcdn.net/img/641692800624c.png",
+        "country": "UNITED STATES",
+        "team": "000000000000120",
+        "role": "",
+        "earnings": "$66,950",
+        "stats": {
+        "labels": [
+            "Agent", ...
+        ],
+        "time": "t60",
+        "times": [
+            "t30",
+            "t60",
+            "t90",
+            "tall"
+        ],
+        "data": [
+            {
+            "Agent": "skye",
+            "Use": "(4)",
+            "RND": "82",
+            "Rating": "1.16",
+            "ACS": "211.8",
+            "K:D": "1.19",
+            "ADR": "137.1",
+            "KAST": "71%",
+            "KPR": "0.78",
+            "APR": "0.37",
+            "FKPR": "0.09",
+            "FDPR": "0.09",
+            "K": "64",
+            "D": "54",
+            "A": "30",
+            "FK": "7",
+            "FD": "7"
+            }, ...
+        ]
+        },
+        "agentStats": {
+            "labels": [
+                "astra",...
+            ],
+            "astra": {
+                "Agent": 0,
+                "Use": 0,
+                "RND": 0,
+                "Rating": 0,
+                "ACS": 0,
+                "K:D": 0,
+                "ADR": 0,
+                "KAST": 0,
+                "KPR": 0,
+                "APR": 0,
+                "FKPR": 0,
+                "FDPR": 0,
+                "K": 0,
+                "D": 0,
+                "A": 0,
+                "FK": 0,
+                "FD": 0
+            },...
+        }
+    }
+}
+  ```
 ### `/players`
 
 ### `/rankings/<region>`
