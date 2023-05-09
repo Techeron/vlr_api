@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 
 // Internal Libs
+const { fetchAllEvents } = require('./scrapers/event/all');
 
 // Config Settings
 const PORT = process.env.PORT || 3000;
@@ -150,7 +151,11 @@ app.get("/api/event/:id", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
 app.get("/api/events", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    fetchAllEvents(1).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        res.json({ status: "Failed", error: err });
+    });
 });
 
 // Logs
