@@ -92,8 +92,11 @@ All endpoints are relative to the domain root
   }
   ```
 ### `/match/:id`
+WIP
 ### `/matches`
+WIP
 ### `/news`
+WIP
 ### `/player/:id`
 
   ```json
@@ -171,13 +174,69 @@ All endpoints are relative to the domain root
 }
   ```
 ### `/players`
-
+WIP
 ### `/rankings/<region>`
-
+WIP
 ### `/team/:id`
-
+```json
+{
+  "status": "Success",
+  "data": {
+    "name": "Cloud9",
+    "tag": "C9",
+    "logo": "https://owcdn.net/img/628addcbd509e.png",
+    "id": "188",
+    "country": "United States",
+    "link": "https://vlr.gg/team/188",
+    "socials": [
+      {
+        "name": "cloud9.gg",
+        "link": "https://cloud9.gg/"
+      },
+      {
+        "name": "twitter.com",
+        "link": "https://twitter.com/C9VAL"
+      }
+    ],
+    "earnings": "",
+    "players_item": [
+      {
+        "ign": "runi",
+        "link": "https://www.vlr.gg/player/16003/runi",
+        "id": "000000000016003",
+        "role": "player"
+      }, ...
+    ],
+    "staff_item": [
+      {
+        "ign": "qpert",
+        "link": "https://www.vlr.gg/player/7105/qpert",
+        "id": "000000000007105",
+        "role": "Sub"
+      },
+      {
+        "ign": "mCe",
+        "link": "https://www.vlr.gg/player/7874/mce",
+        "id": "000000000007874",
+        "role": "head coach"
+      }
+    ],
+    "players": [
+      "000000000016003",
+      "000000000007871",
+      "000000000007873",
+      "000000000000729",
+      "000000000008742"
+    ],
+    "staff": [
+      "000000000007105",
+      "000000000007874"
+    ]
+  }
+}
+```
 ### `/teams`
-
+WIP
 ## Installation
 
 ### Source

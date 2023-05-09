@@ -3,6 +3,7 @@ const idGenerator = function (id) {
     if (!id) throw new Error("Invalid ID")
     return id.padStart(15, "0");
 }
+// Todo - Automate this using the official api
 const AgentArray = [
     "astra",
     "breach",
