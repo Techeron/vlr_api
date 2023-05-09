@@ -90,7 +90,7 @@ All endpoints are relative to the domain root
         "message": "error.message value",
       }
   }
-```
+  ```
 
 ### `/players`
 
