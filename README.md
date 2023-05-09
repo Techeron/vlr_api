@@ -43,7 +43,7 @@ $ npm run debug
 
 ## Contributing
 
-Feel free to submit a [pull request](https://github.com/axsddlr/vlrggapi/pull/new/master) or an [issue](https://github.com/axsddlr/vlrggapi/issues/new)!
+Feel free to submit a [pull request](https://github.com/Techeron/vlr_api/pull/new/master) or an [issue](https://github.com/Techeron/vlr_api/issues/new)!
 
 ## License
 
