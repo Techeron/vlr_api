@@ -1,30 +1,22 @@
-name: Deploy to remote server
+name: Node.js CI/CD
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ master ]
 
 jobs:
   deploy:
-    name: Deploy
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Copy file via scp
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.VLR_API_HOST }}
-        username: ${{ secrets.VLR_API_USERNAME }}
-        key: ${{ secrets.VLR_API_KEY }}
-        source: "."
-        target: "~/vlr.techeron.com"
-
-    - name: Execute remote ssh commands
+    - name: Execute remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.VLR_API_HOST }}
         username: ${{ secrets.VLR_API_USERNAME }}
-        key: ${{ secrets.VLR_API_KEY }}
-        script: "cd ~/vlr.techeron.com && ./deploy-script.sh"
+        password: ${{ secrets.VLR_API_PASSWORD }}
+        script: |
+          cd ~/projects/vlr_api
+          git pull
+          npm install
+          pm2 reload ecosystem.config.js
