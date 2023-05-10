@@ -1,5 +1,11 @@
 //** This is the NO-DATABASE api for vlr.gg */
 //** This means it only provides the JSON equivelent of the data provided on the VLR.GG site */
+// DOTENV
+const path = require('path');
+require("dotenv").config({ path: 
+    path.join(__dirname, "../", ".env")
+})
+
 // External Libs
 const express = require('express');
 const cors = require('cors');
@@ -19,7 +25,7 @@ const MaxPages = { // Updated 1x per day
     "player": 10,
     "team": 10,
     "lastUpdated": Date.now()
-}; 
+};
 
 // Error handling fix
 if (!('toJSON' in Error.prototype))
