@@ -9,6 +9,7 @@ require("dotenv").config({ path:
 // External Libs
 const express = require('express');
 const cors = require('cors');
+const winston = require('winston');
 
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
@@ -27,6 +28,16 @@ const MaxPages = { // Updated 1x per day
     "lastUpdated": Date.now()
 };
 
+// Logger setup
+const defaultLogger = winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    defaultMeta: { service: 'vlr_api' },
+    transports: [
+        new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'logs/combined.log' }),
+    ],
+});
 // Error handling fix
 if (!('toJSON' in Error.prototype))
 Object.defineProperty(Error.prototype, 'toJSON', {
@@ -56,6 +67,13 @@ let logClients = new Array();
 // Setup 2 routes, the / route and the /api route
 // The / route will be used for the website, and pull from the public folder
 // the /api route will be used for the api, and do the api magic
+
+// Log every request
+app.use((req, res, next) => {
+    defaultLogger.info(`${req.method} ${req.url} ${req.ip}`);
+    next();
+});
+
 app.use(express.static('src/public'));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
