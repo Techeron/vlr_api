@@ -315,7 +315,7 @@ app.get('/api/*', function(req, res){
     });
 });
 app.get('*', function(req, res){
-    res.sendFile(path.join(__dirname, '404.html'));
+    res.sendFile(path.join(__dirname, "public",'404.html'));
 });
 // Setup Cors
 app.use(cors({
