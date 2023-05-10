@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/pico.min.css">
+    <title>VLR API</title>
+    <style>
+        header h2 {
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        details h3 {
+            margin-left: 1rem;
+            margin-bottom: .25rem;
+        }
+    </style>
+</head>
+
+<body class="container">
+    <center>
+        <h1>
+            Welcome to the VLR API!
+        </h1>
+    </center>
+    <main>
+        <article>
+            <header>
+                <h2> What is this? | FAQ </h2>
+            </header>
+            <details>
+                <summary role="button">What is this?</summary>
+                <p>
+                    This website is an API for the <a href="https://www.vlr.gg/">vlr.gg</a> website.<br />
+                    It is a work in progress and is not complete.<br />
+                    It is not affiliated with vlr.gg in any way.<br />
+                    It is a personal project that I am working on to learn more about APIs and web development.<br />
+                    If you have any questions or suggestions, feel free to contact me on discord at <strong>BubblySpore#4126</strong>
+                </p>
+            </details>
+            <!-- Primary -->
+            <details>
+                <summary role="button" class="secondary">How Does this work?</summary>
+                <h3>
+                    <a href="/api">/api/:type/:id</a><br />
+                </h3>
+                <p>
+                    For Example: <a href="/api/player/1337">/api/player/1337</a> will show details about Naga<br />
+                    Types: <pre>event | events | player | team</pre><br />
+                    WIP Types: <pre>players | teams | news</pre><br />
+                    Id: the id of the player, team or event from the vlr.gg site<br />
+                    Plural types will return an array of objects, while singular types will return a single object. <br />
+                    <strong>Plural types do not need an id</strong><br/>
+                    All requests made are get requests, and for now there is no caching system
+                    so all data is pulled live from the site every time you make a request.
+                    This is not ideal and will be changed in the future.
+                </p>
+            </details>
+
+            <!-- Secondary -->
+            <details>
+                <summary role="button" class="secondary">Something broke | You should change this</summary>
+                <p>
+                    Please either contact me on discord at <strong>BubblySpore#4126</strong>
+                    or open an issue on the <a href="https://github.com/Techeron/vlr_api/issues">github</a> page.
+                </p>
+            </details>
+
+            <!-- Contrast -->
+            <details>
+                <summary role="button" class="contrast">Give me the code</summary>
+                <p>
+                    <a href="https://github.com/Techeron/vlr_api">Pull it from github</a>
+                </p>
+            </details>
+        </article>
+    </main>
+</body>
+
+</html>

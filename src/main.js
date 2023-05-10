@@ -52,6 +52,16 @@ const app = express();
 let logClients = new Array();
 
 // Routes
+
+// Setup 2 routes, the / route and the /api route
+// The / route will be used for the website, and pull from the public folder
+// the /api route will be used for the api, and do the api magic
+app.use(express.static('src/public'));
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
+
+// API
 app.get("/api", (req, res) => {
     res.json({
         status: "Success",
@@ -274,7 +284,7 @@ app.get("/api/teams", async (req, res) => {
 });
 
 // 404 setup
-app.get('*', function(req, res){
+app.get('/api/*', function(req, res){
     res.json({
         status: "Failed",
         error: {
@@ -286,7 +296,9 @@ app.get('*', function(req, res){
         }
     });
 });
-
+app.get('*', function(req, res){
+    res.sendFile(path.join(__dirname, '../public', '404.html'));
+});
 // Setup Cors
 app.use(cors({
     origin: '*'
