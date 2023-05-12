@@ -10,6 +10,15 @@ const fetchOnePlayer = async (id) => {
     // Validate input
     // make sure id is a string of numbers
     if (!id.match(/^[0-9]+$/)) throw new Error(`Invalid ID: ${id}`);
+    let idArray = id.split(",");
+    let PromiseArray = new Array();
+    for(let i = 0; i < idArray.length; i++) {
+        PromiseArray.push(fetchPlayer(idArray[i]));
+    }
+    return Promise.all(PromiseArray);
+}
+
+const fetchPlayer = async (id) => {
     return new Promise(async (resolve, reject) => {
         // fetch the page
         axios.get(`https://www.vlr.gg/player/${id}`)
@@ -88,7 +97,6 @@ const fetchOnePlayer = async (id) => {
             });
     });
 }
-
 const cleanCountry = (country) => {
     try {
         country = country.split("\n")[2].replace(/[\n,\t]/g, "");
