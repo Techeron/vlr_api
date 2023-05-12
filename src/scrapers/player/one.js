@@ -9,7 +9,9 @@ const { idGenerator, AgentArray } = require('../util');
 const fetchOnePlayer = async (id) => {
     // Validate input
     // make sure id is a string of numbers
-    if (!id.match(/^[0-9]+$/)) throw new Error(`Invalid ID: ${id}`);
+    id = id.replace(/\s/g, '');
+    if (!id.match(/^[0-9,]+/gm)) throw new Error("Invalid ID");
+    if (!id.match(/^[0-9,]+/)) throw new Error(`Invalid ID: ${id}`);
     let idArray = id.split(",");
     let PromiseArray = new Array();
     for(let i = 0; i < idArray.length; i++) {
