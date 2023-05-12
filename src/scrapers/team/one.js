@@ -9,7 +9,7 @@ const { idGenerator, AgentArray } = require('../util');
 const fetchOneTeam = async (id) => {
     // Validate input
     // make sure id is a string of numbers
-    if (!id.match(/^[0-9]+$/)) throw new Error("Invalid ID");
+    if (!id.match(/^[0-9,]+$/)) throw new Error("Invalid ID");
     return new Promise(async (resolve, reject) => {
         // fetch the page
         axios.get(`https://www.vlr.gg/team/${id}`)
