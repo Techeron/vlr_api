@@ -70,6 +70,11 @@ let logClients = new Array();
 
 // Log every request
 app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    );
     defaultLogger.info(`${req.method} ${req.url} ${req.ip}`);
     next();
 });
@@ -318,9 +323,6 @@ app.get('*', function(req, res){
     res.sendFile(path.join(__dirname, "public",'404.html'));
 });
 // Setup Cors
-app.use(cors({
-    origin: '*'
-  }));
 
 // Setup Express Server
 app.listen(PORT, () => {
