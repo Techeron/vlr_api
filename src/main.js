@@ -5,11 +5,12 @@ const path = require('path');
 require("dotenv").config({ path: 
     path.join(__dirname, "../", ".env")
 })
-
 // External Libs
 const express = require('express');
+const axios = require('axios');
 const cors = require('cors');
 const winston = require('winston');
+const url = require('url');
 
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
@@ -216,7 +217,6 @@ app.get("/api", (req, res) => {
         MaxPages: MaxPages
     });
 });
-
 // Events
 app.get("/api/event/:id", async (req, res) => {
     fetchOneEvent(req.params.id).then((data) => {
@@ -244,7 +244,6 @@ app.get("/api/events/:page?", async (req, res) => {
         res.json({ status: "Failed", error: err });
     });
 });
-
 // Logs
 app.get("/api/log", async (req, res) => {
     // Server event stream to send updates to clients
@@ -261,7 +260,6 @@ app.get("/api/log", async (req, res) => {
         logClients = logClients.filter((client) => client !== res);
     });
 });
-
 // Matches
 app.get("/api/match/:id", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
@@ -269,12 +267,10 @@ app.get("/api/match/:id", async (req, res) => {
 app.get("/api/matches", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
-
 // News
 app.get("/api/news", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
-
 // Players
 app.get("/api/player/:id", async (req, res) => {
     fetchOnePlayer(req.params.id).then((data) => {
@@ -287,12 +283,10 @@ app.get("/api/player/:id", async (req, res) => {
 app.get("/api/players", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
-
 // Rankings
 app.get("/api/rankings/:region", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
-
 // Teams
 app.get("/api/team/:id", async (req, res) => {
     fetchOneTeam(req.params.id).then((data) => {
@@ -305,7 +299,52 @@ app.get("/api/team/:id", async (req, res) => {
 app.get("/api/teams", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
 });
-
+// Bad Cody Discord OAUTH2 Code (Do not use)
+app.get("/api/auth/discord", async (req, res) => {
+    // Check if code is present
+    if (!req.query.code) {
+        // Get a code from this uri
+        res.json({
+            status: "Failed",
+            error: {
+                name: "Missing Code",
+                description: "No code was provided in the request",
+            }
+        });
+        return;
+    } else {
+        // Take the code, generate a request to discord to get the token
+        const formData = new url.URLSearchParams({
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET,
+            grant_type: "authorization_code",
+            code: req.query.code,
+            redirect_uri: "http://localhost:9999/api/auth/discord",
+        });
+        console.log(formData);
+        const output = await axios.post("https://discord.com/api/oauth2/token", formData, {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        }).then((r) => {
+            console.log("User Authenticated!");
+            res.redirect(`http://localhost:3000/login?at=${r.data.access_token}&rt=${r.data.refresh_token}&et=${r.data.expires_in}`);
+            return r.data;
+        }).catch((err) => {
+            console.log(err);
+            res.json({
+                status: "Failed",
+                error: {
+                    name: err.response.data.error,
+                    description: err.response.data.error_description,
+                }
+            
+            });
+            console.log(err.response.data);
+        });
+        console.log(output);
+    }
+});
 // 404 setup
 app.get('/api/*', function(req, res){
     res.json({
@@ -322,9 +361,14 @@ app.get('/api/*', function(req, res){
 app.get('*', function(req, res){
     res.sendFile(path.join(__dirname, "public",'404.html'));
 });
+
 // Setup Cors
 
 // Setup Express Server
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    next();
+})
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
