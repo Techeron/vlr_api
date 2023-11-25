@@ -11,6 +11,7 @@ const axios = require('axios');
 const cors = require('cors');
 const winston = require('winston');
 const url = require('url');
+const PocketBase = require('pocketbase/cjs');
 
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
@@ -20,7 +21,7 @@ const { fetchOneTeam } = require('./scrapers/team/one');
 
 // Config Settings
 const PORT = process.env.PORT || 3000;
-const MaxPages = { // Updated 1x per day
+const MaxPages = { 
     "event": 10,
     "match": 10,
     "news": 10,
@@ -28,6 +29,15 @@ const MaxPages = { // Updated 1x per day
     "team": 10,
     "lastUpdated": Date.now()
 };
+
+// Database Setup
+const db = new PocketBase(process.env.pbapi);
+const authData = db.admins.authWithPassword(process.env.pbuser, process.env.pbpass).catch((err)=>{
+    console.log("Failed to authenticate with PocketBase");
+}).then((data)=>{
+    console.log("Authenticated with PocketBase");
+    console.log(data);
+})
 
 // Logger setup
 const defaultLogger = winston.createLogger({
@@ -79,7 +89,8 @@ app.use((req, res, next) => {
     defaultLogger.info(`${req.method} ${req.url} ${req.ip}`);
     next();
 });
-
+// For fetch requests body parsing
+app.use(express.json());
 app.use(express.static('src/public'));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
@@ -281,7 +292,39 @@ app.get("/api/player/:id", async (req, res) => {
     });
 });
 app.get("/api/players", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    res.json({ status: "Success", data: {
+        message: "Please use the POST method for this endpoint",
+        example: {
+            ids: ["1", "2", "3"]
+        }
+    } });
+});
+app.post("/api/players", async (req, res) => {
+    // Get Posted IDs from ID param
+    const ids = req.body.ids;
+    const retValue = [];
+    const promises = [];
+    console.log("IDS: " + ids);
+    if(!ids || ids?.length < 1) {
+        res.json({ status: "Failed", error: "No IDs provided" });
+        return;
+    }
+    // Validate input
+    ids.forEach((id) => {
+        console.log(typeof id);
+        promises.push(fetchOnePlayer(id).then((data) => {
+            retValue.push(data);
+        }).catch((err) => {
+            console.error(err);
+            res.json({ status: "Failed", error: err });
+        }))
+    });
+    Promise.all(promises).then(() => {
+        res.json({ status: "Success", data: retValue });
+    }).catch((err) => {
+        console.error(err);
+        res.json({ status: "Failed", error: err });
+    });
 });
 // Rankings
 app.get("/api/rankings/:region", async (req, res) => {
@@ -301,7 +344,6 @@ app.get("/api/teams", async (req, res) => {
 });
 // Bad Cody Discord OAUTH2 Code (Do not use)
 app.get("/api/auth/discord", async (req, res) => {
-    // Check if code is present
     if (!req.query.code) {
         // Get a code from this uri
         res.json({
