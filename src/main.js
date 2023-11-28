@@ -11,11 +11,11 @@ const axios = require('axios');
 const cors = require('cors');
 const winston = require('winston');
 const url = require('url');
-const PocketBase = require('pocketbase/cjs');
 
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
 const { fetchOneEvent } = require('./scrapers/event/one');
+const { fetchEventMatches } = require('./scrapers/event/matches');
 const { fetchOnePlayer } = require('./scrapers/player/one');
 const { fetchOneTeam } = require('./scrapers/team/one');
 
@@ -29,16 +29,17 @@ const MaxPages = {
     "team": 10,
     "lastUpdated": Date.now()
 };
-
-// Database Setup
-const db = new PocketBase(process.env.pbapi);
-const authData = db.admins.authWithPassword(process.env.pbuser, process.env.pbpass).catch((err)=>{
-    console.log("Failed to authenticate with PocketBase");
-}).then((data)=>{
-    console.log("Authenticated with PocketBase");
-    console.log(data);
-})
-
+const Cache = {
+    "event": {},
+    "events": {},
+    "match": {},
+    "news": {},
+    "player": {},
+    "team": {},
+    "lastUpdated": Date.now()
+};
+const CacheMins = 1;
+const CacheTime = 1000 * 60 * CacheMins; 
 // Logger setup
 const defaultLogger = winston.createLogger({
     level: 'info',
@@ -68,7 +69,6 @@ Object.defineProperty(Error.prototype, 'toJSON', {
     configurable: true,
     writable: true
 });
-
 // Setup Express
 const app = express();
 let logClients = new Array();
@@ -87,6 +87,40 @@ app.use((req, res, next) => {
         'Origin, X-Requested-With, Content-Type, Accept'
     );
     defaultLogger.info(`${req.method} ${req.url} ${req.ip}`);
+
+    // Cache Function (Functional but wierd)
+    // let params = req.url.split("/");
+    // params.shift();
+    // if (params[0] != "api") return next();
+    // if(params.length == 2) {
+    //     // Multiple Items
+    //     if ((Cache[params[1]]?.[1]?.lastUpdated + CacheTime) > Date.now()) {
+    //         // Cache is still valid
+    //         console.log("USING CACHE!");
+    //         res.json({ status: "Success", data: Cache[params[1]][1].data, updated: Cache[params[1]][1].lastUpdated });
+    //     } else {
+    //         console.log("-----------------");
+    //         console.log(Cache[params[1]]?.[1]?.lastUpdated + CacheTime)
+    //         console.log(Date.now())
+    //         console.log((Cache[params[1]]?.[1]?.lastUpdated + CacheTime) > Date.now())
+    //         // Cache is invalid
+    //         next();
+    //     }
+    // }
+    // if(params.length == 3) {
+    //     // Single Item
+    //     if ((Cache[params[1]]?.[params[2]]?.lastUpdated + CacheTime) > Date.now()) {
+    //         // Cache is still valid
+    //         console.log("USING CACHE!");
+    //         res.json({ status: "Success", data: Cache[params[1]][params[2]].data, updated: Cache[params[1]][params[2]].lastUpdated });
+    //     } else {
+    //         // Cache is invalid
+    //         next();
+    //     }
+    // } else {
+    //     // Cache is invalid
+    //     next();
+    // }
     next();
 });
 // For fetch requests body parsing
@@ -225,11 +259,13 @@ app.get("/api", (req, res) => {
         version: "1.0.0",
         author: "Cody Krist",
         lastUpdated: "5/9/2023",
+        CurrentCacheTime: CacheMins + " Minutes",
         MaxPages: MaxPages
     });
 });
 // Events
 app.get("/api/event/:id", async (req, res) => {
+    const id = req.params.id;
     fetchOneEvent(req.params.id).then((data) => {
         res.json({ status: "Success", data: data });
     }).catch((err) => {
@@ -237,9 +273,14 @@ app.get("/api/event/:id", async (req, res) => {
         res.json({ status: "Failed", error: err });
     });
 });
-/** - Needs Work */
+/* - Needs Work */
 app.get("/api/event/:id/matches", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    const id = req.params.id;
+    fetchEventMatches(req.params.id).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        res.json({ status: "Failed", error: err });
+    });
 });
 app.get("/api/events/:page?", async (req, res) => {
     // Validate input
@@ -250,6 +291,8 @@ app.get("/api/events/:page?", async (req, res) => {
     // if Page is greater than 10, default to 10
     if (req.params.page > 10) req.params.page = 10;    
     fetchAllEvents(req.params.page).then((data) => {
+        let lastUpdated = Date.now();
+        Cache.events[req.params.page] = {lastUpdated,data};
         res.json({ status: "Success", data: data });
     }).catch((err) => {
         res.json({ status: "Failed", error: err });
