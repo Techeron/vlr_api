@@ -45,6 +45,7 @@ const fetchEventMatches = async (id) => {
                     Matches.push({
                         time: MatchDates[MatchIndex] + " " + $(element).find(".match-item-time").text().trim(),
                         link: `https://www.vlr.gg${$(element).attr("href")}`,
+                        id: idGenerator($(element).attr("href").split("/")[1]),
                         teams: [
                             $(element).find(".match-item-vs-team-name").first().text().trim(),
                             $(element).find(".match-item-vs-team-name").last().text().trim()
