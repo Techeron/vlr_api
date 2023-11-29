@@ -15,7 +15,8 @@ const url = require('url');
 // Internal Libs
 const { fetchAllEvents } = require('./scrapers/event/all');
 const { fetchOneEvent } = require('./scrapers/event/one');
-const { fetchEventMatches } = require('./scrapers/event/matches');
+const { fetchAllMatches } = require('./scrapers/match/all');
+const { fetchOneMatch } = require('./scrapers/match/one');
 const { fetchOnePlayer } = require('./scrapers/player/one');
 const { fetchOneTeam } = require('./scrapers/team/one');
 
@@ -273,15 +274,6 @@ app.get("/api/event/:id", async (req, res) => {
         res.json({ status: "Failed", error: err });
     });
 });
-/* - Needs Work */
-app.get("/api/event/:id/matches", async (req, res) => {
-    const id = req.params.id;
-    fetchEventMatches(req.params.id).then((data) => {
-        res.json({ status: "Success", data: data });
-    }).catch((err) => {
-        res.json({ status: "Failed", error: err });
-    });
-});
 app.get("/api/events/:page?", async (req, res) => {
     // Validate input
     // if Page is not a number, default to 1
@@ -316,10 +308,23 @@ app.get("/api/log", async (req, res) => {
 });
 // Matches
 app.get("/api/match/:id", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+    fetchOneMatch(req.params.id).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        res.json({ status: "Failed", error: err });
+    });
 });
-app.get("/api/matches", async (req, res) => {
-    res.json({ status: "Success", data: "WIP" });
+app.get("/api/matches/:id?", async (req, res) => {
+    const id = req.params.id;
+    if(!id) {
+        res.json({ status: "Failed", error: "No Event ID provided" });
+        return;
+    }
+    fetchAllMatches(req.params.id).then((data) => {
+        res.json({ status: "Success", data: data });
+    }).catch((err) => {
+        res.json({ status: "Failed", error: err });
+    });
 });
 // News
 app.get("/api/news", async (req, res) => {
@@ -384,51 +389,6 @@ app.get("/api/team/:id", async (req, res) => {
 });
 app.get("/api/teams", async (req, res) => {
     res.json({ status: "Success", data: "WIP" });
-});
-// Bad Cody Discord OAUTH2 Code (Do not use)
-app.get("/api/auth/discord", async (req, res) => {
-    if (!req.query.code) {
-        // Get a code from this uri
-        res.json({
-            status: "Failed",
-            error: {
-                name: "Missing Code",
-                description: "No code was provided in the request",
-            }
-        });
-        return;
-    } else {
-        // Take the code, generate a request to discord to get the token
-        const formData = new url.URLSearchParams({
-            client_id: process.env.CLIENT_ID,
-            client_secret: process.env.CLIENT_SECRET,
-            grant_type: "authorization_code",
-            code: req.query.code,
-            redirect_uri: "http://localhost:9999/api/auth/discord",
-        });
-        console.log(formData);
-        const output = await axios.post("https://discord.com/api/oauth2/token", formData, {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        }).then((r) => {
-            console.log("User Authenticated!");
-            res.redirect(`http://localhost:3000/login?at=${r.data.access_token}&rt=${r.data.refresh_token}&et=${r.data.expires_in}`);
-            return r.data;
-        }).catch((err) => {
-            console.log(err);
-            res.json({
-                status: "Failed",
-                error: {
-                    name: err.response.data.error,
-                    description: err.response.data.error_description,
-                }
-            
-            });
-            console.log(err.response.data);
-        });
-        console.log(output);
-    }
 });
 // 404 setup
 app.get('/api/*', function(req, res){
