@@ -51,6 +51,7 @@ const defaultLogger = winston.createLogger({
         new winston.transports.File({ filename: 'logs/combined.log' }),
     ],
 });
+defaultLogger{"Test", "Test"};
 // Error handling fix
 if (!('toJSON' in Error.prototype))
 Object.defineProperty(Error.prototype, 'toJSON', {
