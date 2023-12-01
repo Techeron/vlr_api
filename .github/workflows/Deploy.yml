@@ -26,6 +26,8 @@ jobs:
 
       - name: Restart vlrapi service
         run: |
+          whoami
+          pwd
           cd ~/services/vlr_api
           git pull
           systemctl restart vlrapi.service
