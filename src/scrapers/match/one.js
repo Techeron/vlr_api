@@ -136,7 +136,7 @@ const fetchOneMatch = async (id) => {
                             Match.players.push(Player);
                         });
                     } else {
-                        
+                        // Add Logic for 2nd event to merge into first one
                     }
                 });
 
