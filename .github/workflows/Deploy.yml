@@ -23,9 +23,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-
-      - name: Restart vlrapi service
-        run: |
-          cd /var/www/source/vlr_api
-          git pull
-          systemctl restart vlrapi.service
+          script: |
+            cd /var/www/source/vlr_api
+            git pull
+            
