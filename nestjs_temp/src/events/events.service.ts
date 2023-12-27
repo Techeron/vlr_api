@@ -4,6 +4,7 @@ import { load } from 'cheerio';
 
 @Injectable()
 export class EventsService {
+  // Fetch events from vlr.gg/events/:page
   async events(page: number = 1) {
     // Validate Input
     if (page < 1) throw new Error('Pages must be greater than 0');
@@ -72,11 +73,105 @@ export class EventsService {
     });
     return Events;
   }
-  event(id: number) {
-    console.log(id);
-    return {
-      id,
-      name: 'Nest.js Rocks!',
-    };
+  // Fetch a singular event from vlr.gg/event/:id
+  async event(id: number) {
+    // make sure id is a string of numbers
+    const EventData = new Promise(async (resolve, reject) => {
+      // fetch the page
+      axios
+        .get(`https://www.vlr.gg/event/${id}`)
+        .then((response) => {
+          // parse the page
+          const $ = load(response.data);
+          const Event: any = {};
+          Event.name = $('h1.wf-title').text().trim();
+
+          // Get all teams
+          const Teams = [];
+          try {
+            $('.event-team').each((i, element) => {
+              const teamName = $(element)
+                .find('.event-team-name')
+                .text()
+                .trim();
+              const teamLogo = $(element)
+                .find('.event-team-players-mask > img')
+                .attr('src');
+              const teamLink = $(element).find('.event-team-name').attr('href');
+              const teamId = teamLink.split('/')[2];
+              const teamPlayers = [];
+              Teams.push({
+                type: 'team',
+                name: teamName,
+                logo: `https:${teamLogo}`,
+                link: `https://www.vlr.gg${teamLink}`,
+                id: teamId,
+                players: teamPlayers,
+              });
+            });
+          } catch (err) {
+            throw err;
+          }
+
+          // Get all players
+          const Players = [];
+          const FailedLinks = [];
+          $('.event-team-players-item').each((i, element) => {
+            const playerLink = $(element).attr('href');
+            let playerId;
+            try {
+              playerId = playerLink.split('/')[2];
+            } catch (err) {
+              // Player ID does not exist, just return
+              return;
+            }
+            if (playerId === null || playerId === undefined) return;
+            const playerIgn = $(element).text().trim();
+            const playerTeamName = $(element)
+              .parent()
+              .parent()
+              .find('.event-team-name')
+              .text()
+              .trim();
+            const playerTeamId = $(element)
+              .parent()
+              .parent()
+              .find('.event-team-name')
+              .attr('href')
+              .split('/')[2];
+            for (let i = 0; i < Teams.length; i++) {
+              if (Teams[i].name == playerTeamName) {
+                Teams[i].players.push({
+                  type: 'player',
+                  ign: playerIgn,
+                  link: `https://www.vlr.gg${playerLink}`,
+                  id: playerId,
+                });
+              }
+            };
+            Players.push({
+              type: 'player',
+              name: playerIgn,
+              ign: playerIgn,
+              link: `https://www.vlr.gg${playerLink}`,
+              id: playerId,
+              team: {
+                type: 'team',
+                name: playerTeamName,
+                id: playerTeamId,
+              },
+            });
+          });
+
+          Event.teams_item = Teams;
+          Event.players_item = Players;
+          Event.failed_links = FailedLinks;
+          resolve(Event);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+    return await EventData;
   }
 }
