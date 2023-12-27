@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class PlayersService {
+export class TeamsService {
   one(id: number) {
     return {
       id: id,
       msg: 'wip',
     };
   }
-  all(teamId: number) {
+  all(eventId: number) {
     return {
-      id: teamId,
+      id: eventId,
       msg: 'wip',
     };
   }
