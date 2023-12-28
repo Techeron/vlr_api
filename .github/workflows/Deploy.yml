@@ -14,4 +14,4 @@ jobs:
       run: sudo apt-get install sshpass
 
     - name: Run script on remote server
-      run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} 'bash -s' < /var/www/scripts/UpdateAPI.sh
+      run: sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} 'bash -s' < /var/www/scripts/UpdateAPI.sh
