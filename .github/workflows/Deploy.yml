@@ -1,29 +1,17 @@
-name: Deploy to Main Server
+name: Run Bash Script on Remote Server
 
-on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment: VServer-2
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Upload files to server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            cd /var/www/source/vlr_api
-            git pull
-            
+    - name: Install SSH Pass
+      run: sudo apt-get install sshpass
+
+    - name: Run script on remote server
+      run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.HOST }} 'bash -s' < /var/www/scripts/UpdateAPI.sh
