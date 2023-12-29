@@ -18,21 +18,37 @@ const fetchOneEvent = async (id) => {
                 let $ = cheerio.load(response.data);
                 const Event = new Object();
                 Event.name = $('h1.wf-title').text().trim();
+                Event.id = idGenerator(id);
 
                 // Get all teams
                 const Teams = new Array();
-                try {
-                    $('.event-team').each((i, element) => {
-                        const teamName = $(element).find(".event-team-name").text().trim();
-                        const teamLogo = $(element).find(".event-team-players-mask > img").attr("src");
-                        const teamLink = $(element).find(".event-team-name").attr("href");
-                        const teamId = teamLink.split("/")[2];
-                        const teamPlayers = new Array();
-                        Teams.push({ type:"team", name: teamName, logo: `https:${teamLogo}`, link: `https://www.vlr.gg${teamLink}`, id: idGenerator(teamId), players: teamPlayers });
-                    });
-                } catch (err) {
-                    throw err;
-                }
+                $(".event-team").each((i, element) => {
+                    const team = new Object();
+                    try {
+                        team.name = $(element).find(".event-team-name").text().trim();
+                        team.logo = $(element).find(".event-team-players-mask > img").attr("src");
+                        team.link = $(element).find(".event-team-name").attr("href");
+                        team.id = idGenerator(team.link.split("/")[2]);
+                        team.players = new Array();
+                        team.status = "ok";
+                        Teams.push(team);
+                    } catch (err) {
+                        team.status = "error";
+                        Teams.push(team);
+                    }
+                });
+                // try {
+                //     $('.event-team').each((i, element) => {
+                //         const teamName = $(element).find(".event-team-name").text().trim();
+                //         const teamLogo = $(element).find(".event-team-players-mask > img").attr("src");
+                //         const teamLink = $(element).find(".event-team-name").attr("href");
+                //         const teamId = teamLink.split("/")[2];
+                //         const teamPlayers = new Array();
+                //         Teams.push({ type:"team", name: teamName, logo: `https:${teamLogo}`, link: `https://www.vlr.gg${teamLink}`, id: idGenerator(teamId), players: teamPlayers });
+                //     });
+                // } catch (err) {
+                //     throw err;
+                // }
 
                 // Get all players
                 const Players = new Array();
